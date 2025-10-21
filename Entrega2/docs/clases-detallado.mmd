@@ -1,0 +1,593 @@
+%% Diagrama de clases (detallado) - Proyecto1
+%% Incluye clases, atributos, métodos públicos clave y relaciones
+classDiagram
+direction LR
+
+%% ===================== application.service =====================
+class AppContext {
+  +UsuarioRepository usuarios
+  +VenueRepository venues
+  +EventoRepository eventos
+  +LocalidadRepository localidades
+  +OfertaRepository ofertas
+  +AsientoRepository asientos
+  +TiqueteRepository tiquetes
+  +TiqueteAgregadoRepository tiquetesAgregados
+  +PricingPolicy pricingPolicy
+  +OfferEngine offerEngine
+}
+
+class AuthService {
+  -UsuarioRepository usuarios
+  +AuthService(UsuarioRepository)
+  +Usuario login(String,String)
+  +ClienteComprador registrarCliente(String,String)
+  +Organizador registrarOrganizador(String,String)
+}
+
+class AdminService {
+  -UsuarioRepository usuarios
+  -VenueRepository venues
+  +AdminService(UsuarioRepository,VenueRepository)
+  +java.util.List~Venue~ listarPendientes()
+  +void aprobarVenue(String,Usuario)
+  +void rechazarVenue(String,Usuario)
+  +void actualizarCargos(Usuario,java.math.BigDecimal,java.math.BigDecimal)
+}
+
+class OrganizerService {
+  -VenueRepository venues
+  -EventoRepository eventos
+  -LocalidadRepository localidades
+  -AsientoRepository asientos
+  -OfertaRepository ofertas
+  +OrganizerService(VenueRepository,EventoRepository,LocalidadRepository,AsientoRepository,OfertaRepository)
+  +Venue proponerVenue(Usuario,String,String,int)
+  +Evento crearEvento(Usuario,String,String,java.time.LocalDate,String)
+  +Localidad crearLocalidad(Usuario,String,String,java.math.BigDecimal,boolean)
+  +void cargarAsientos(Usuario,String,java.util.List~String~)
+  +Oferta crearOferta(Usuario,String,double,java.time.LocalDate,java.time.LocalDate)
+}
+
+class CatalogService {
+  -VenueRepository venues
+  -EventoRepository eventos
+  -LocalidadRepository localidades
+  +CatalogService(VenueRepository,EventoRepository,LocalidadRepository)
+  +java.util.List~Venue~ venuesAprobados()
+  +java.util.List~Evento~ eventosPorVenue(String)
+  +java.util.List~Localidad~ localidadesPorEvento(String)
+}
+
+class OfferService {
+  -OfertaRepository ofertas
+  +OfferService(OfertaRepository)
+  +java.util.List~Oferta~ listarPorLocalidad(String)
+}
+
+class PurchaseService {
+  -UsuarioRepository usuarios
+  -LocalidadRepository localidades
+  -OfertaRepository ofertas
+  -AsientoRepository asientos
+  -TiqueteRepository tiquetes
+  -OfferEngine offerEngine
+  -PricingPolicy pricingPolicy
+  +PurchaseService(UsuarioRepository,LocalidadRepository,OfertaRepository,AsientoRepository,TiqueteRepository,OfferEngine,PricingPolicy)
+  +TiqueteBasico comprarBasico(Usuario,String,boolean)
+  +TiqueteNumerado comprarNumerado(Usuario,String,boolean)
+  +TiqueteAgrupacion comprarAgrupacion(Usuario,String,int,boolean)
+  +PaqueteDeluxe crearPaqueteDeluxe(Usuario,String,int,boolean,String,boolean)
+  -PriceBreakdown calcularPrecioLocalidad(Localidad)
+  -void debitarSaldo(Usuario,java.math.BigDecimal)
+}
+
+class TransferService {
+  -TiqueteRepository tiquetes
+  +TransferService(TiqueteRepository)
+  +void transferir(Usuario,String,String)
+}
+
+class DataSeeder {
+  -UsuarioRepository usuarios
+  -VenueRepository venues
+  -EventoRepository eventos
+  -LocalidadRepository localidades
+  -AsientoRepository asientos
+  -OfertaRepository ofertas
+  +DataSeeder(UsuarioRepository,VenueRepository,EventoRepository,LocalidadRepository,AsientoRepository,OfertaRepository)
+  +void seed()
+}
+
+%% ===================== domain.exception =====================
+class BusinessException {
+  <<exception>>
+  +BusinessException(String)
+}
+BusinessException --|> java.lang.RuntimeException
+
+%% ===================== domain.model =====================
+class Asiento {
+  -String id
+  -String localidadId
+  -String numeroAsiento
+  -boolean disponible
+  +Asiento(String,String,String,boolean)
+  +String getId()
+  +String getLocalidadId()
+  +String getNumeroAsiento()
+  +boolean isDisponible()
+  +void setDisponible(boolean)
+}
+
+class Localidad {
+  -String id
+  -String eventoId
+  -String nombre
+  -java.math.BigDecimal precioBase
+  -boolean esNumerada
+  +Localidad(String,String,String,java.math.BigDecimal,boolean)
+  +String getId()
+  +String getEventoId()
+  +String getNombre()
+  +java.math.BigDecimal getPrecioBase()
+  +boolean isEsNumerada()
+  +void setNombre(String)
+  +void setPrecioBase(java.math.BigDecimal)
+  +void setEsNumerada(boolean)
+}
+
+class Evento {
+  -String id
+  -String nombre
+  -java.time.LocalDate fecha
+  -String tipoEvento
+  -String venueId
+  -String organizadorId
+  +Evento(String,String,java.time.LocalDate,String,String,String)
+  +String getId()
+  +String getNombre()
+  +java.time.LocalDate getFecha()
+  +String getTipoEvento()
+  +String getVenueId()
+  +String getOrganizadorId()
+  +void setNombre(String)
+  +void setFecha(java.time.LocalDate)
+  +void setTipoEvento(String)
+}
+
+class Oferta {
+  -String id
+  -String localidadId
+  -double descuentoPorcentual
+  -java.time.LocalDate inicio
+  -java.time.LocalDate fin
+  +Oferta(String,String,double,java.time.LocalDate,java.time.LocalDate)
+  +String getId()
+  +String getLocalidadId()
+  +double getDescuentoPorcentual()
+  +java.time.LocalDate getInicio()
+  +java.time.LocalDate getFin()
+  +boolean activaEn(java.time.LocalDate)
+}
+
+class Venue {
+  -String id
+  -String nombre
+  -String ubicacion
+  -int capacidadMaxima
+  -boolean aprobado
+  -String organizadorId
+  +Venue(String,String,String,int,boolean,String)
+  +String getId()
+  +String getNombre()
+  +String getUbicacion()
+  +int getCapacidadMaxima()
+  +boolean isAprobado()
+  +String getOrganizadorId()
+  +void setNombre(String)
+  +void setUbicacion(String)
+  +void setCapacidadMaxima(int)
+  +void setAprobado(boolean)
+}
+
+class Usuario {
+  <<abstract>>
+  -String id
+  -String login
+  -String password
+  -Role role
+  +String getId()
+  +String getLogin()
+  +String getPassword()
+  +Role getRole()
+  +void setPassword(String)
+}
+
+class ClienteComprador {
+  -java.math.BigDecimal saldoVirtual
+  +ClienteComprador(String,String,String,java.math.BigDecimal)
+  +java.math.BigDecimal getSaldoVirtual()
+  +void setSaldoVirtual(java.math.BigDecimal)
+}
+
+class Administrador {
+  -java.math.BigDecimal porcentajeCargoServicio
+  -java.math.BigDecimal cobroFijoEmision
+  +Administrador(String,String,String,java.math.BigDecimal,java.math.BigDecimal)
+  +java.math.BigDecimal getPorcentajeCargoServicio()
+  +java.math.BigDecimal getCobroFijoEmision()
+  +void setPorcentajeCargoServicio(java.math.BigDecimal)
+  +void setCobroFijoEmision(java.math.BigDecimal)
+}
+
+class Organizador {
+  +Organizador(String,String,String,java.math.BigDecimal)
+}
+
+class Role {
+  <<enumeration>>
+  ADMIN
+  ORGANIZADOR
+  CLIENTE
+}
+
+class Tiquete {
+  <<abstract>>
+  -String id
+  -String localidadId
+  -boolean transferible
+  -boolean vendido
+  -java.math.BigDecimal precioFinal
+  -java.math.BigDecimal cargoServicio
+  -java.math.BigDecimal cuotaEmision
+  -String compradorId
+  +String getId()
+  +String getLocalidadId()
+  +boolean isTransferible()
+  +boolean isVendido()
+  +java.math.BigDecimal getPrecioFinal()
+  +java.math.BigDecimal getCargoServicio()
+  +java.math.BigDecimal getCuotaEmision()
+  +String getCompradorId()
+  +void marcarVendido(String,java.math.BigDecimal,java.math.BigDecimal,java.math.BigDecimal)
+  +void transferirA(String)
+}
+
+class TiqueteBasico {
+  +TiqueteBasico(String,String,boolean)
+}
+
+class TiqueteNumerado {
+  -String numeroAsiento
+  +TiqueteNumerado(String,String,boolean,String)
+  +String getNumeroAsiento()
+}
+
+class TiqueteAgrupacion {
+  -java.math.BigDecimal precioAgrupacion
+  -int restriccionTopeX
+  +TiqueteAgrupacion(String,String,boolean,java.math.BigDecimal,int)
+  +java.math.BigDecimal getPrecioAgrupacion()
+  +int getRestriccionTopeX()
+}
+
+class TiqueteComposite {
+  -java.util.List~String~ componentesIds
+  +java.util.List~String~ getComponentesIds()
+  +void addComponente(String)
+}
+
+class TiqueteMultiple {
+  +TiqueteMultiple(String,String,boolean,java.math.BigDecimal,int)
+}
+
+class PaqueteDeluxe {
+  -String descripcionBeneficios
+  -boolean incluyeMercancia
+  +PaqueteDeluxe(String,String,boolean,java.math.BigDecimal,int,String,boolean)
+  +String getDescripcionBeneficios()
+  +boolean isIncluyeMercancia()
+}
+
+Usuario <|-- ClienteComprador
+Usuario <|-- Administrador
+ClienteComprador <|-- Organizador
+Tiquete <|-- TiqueteBasico
+TiqueteBasico <|-- TiqueteNumerado
+TiqueteBasico <|-- TiqueteAgrupacion
+TiqueteAgrupacion <|-- TiqueteComposite
+TiqueteComposite <|-- TiqueteMultiple
+TiqueteComposite <|-- PaqueteDeluxe
+
+Localidad --> Evento : "eventoId"
+Asiento --> Localidad : "localidadId"
+Evento --> Venue : "venueId"
+Tiquete --> Localidad : "localidadId"
+Tiquete ..> Usuario : "compradorId"
+
+%% ===================== domain.repository =====================
+class AsientoRepository {
+  <<interface>>
+  +java.util.Optional~Asiento~ findById(String)
+  +java.util.List~Asiento~ findByLocalidad(String)
+  +java.util.Optional~Asiento~ findByLocalidadAndNumero(String,String)
+  +Asiento save(Asiento)
+  +void update(Asiento)
+}
+class EventoRepository {
+  <<interface>>
+  +java.util.Optional~Evento~ findById(String)
+  +java.util.List~Evento~ findAll()
+  +java.util.List~Evento~ findByVenue(String)
+  +java.util.List~Evento~ findByOrganizador(String)
+  +java.util.Optional~Evento~ findByVenueAndNombre(String,String)
+  +Evento save(Evento)
+  +void update(Evento)
+}
+class LocalidadRepository {
+  <<interface>>
+  +java.util.Optional~Localidad~ findById(String)
+  +java.util.List~Localidad~ findAll()
+  +java.util.List~Localidad~ findByEvento(String)
+  +java.util.Optional~Localidad~ findByEventoAndNombre(String,String)
+  +Localidad save(Localidad)
+  +void update(Localidad)
+}
+class VenueRepository {
+  <<interface>>
+  +java.util.Optional~Venue~ findById(String)
+  +java.util.List~Venue~ findAll()
+  +java.util.List~Venue~ findByAprobado(boolean)
+  +java.util.Optional~Venue~ findByNombre(String)
+  +Venue save(Venue)
+  +void update(Venue)
+}
+class OfertaRepository {
+  <<interface>>
+  +java.util.Optional~Oferta~ findById(String)
+  +java.util.List~Oferta~ findAll()
+  +java.util.List~Oferta~ findByLocalidad(String)
+  +Oferta save(Oferta)
+  +void update(Oferta)
+}
+class TiqueteRepository {
+  <<interface>>
+  +java.util.Optional~Tiquete~ findById(String)
+  +java.util.List~Tiquete~ findAll()
+  +java.util.List~Tiquete~ findByLocalidad(String)
+  +java.util.List~Tiquete~ findByComprador(String)
+  +Tiquete save(Tiquete)
+  +void update(Tiquete)
+}
+class TiqueteAgregadoRepository {
+  <<interface>>
+  +void addComponente(String,String,String)
+  +java.util.List~String~ findComponentes(String)
+}
+class UsuarioRepository {
+  <<interface>>
+  +java.util.Optional~Usuario~ findByLogin(String)
+  +java.util.Optional~Usuario~ findById(String)
+  +java.util.List~Usuario~ findAll()
+  +Usuario save(Usuario)
+  +void update(Usuario)
+}
+
+%% ===================== domain.service =====================
+class IdGenerator {
+  <<static>>
+  +String newId()
+}
+class OfferEngine {
+  +double mejorDescuento(java.util.List~Oferta~,java.time.LocalDate)
+}
+class PricingPolicy {
+  <<interface>>
+  +PriceBreakdown calcularPrecio(java.math.BigDecimal,double,java.math.BigDecimal,java.math.BigDecimal)
+}
+class DefaultPricingPolicy {
+  +PriceBreakdown calcularPrecio(java.math.BigDecimal,double,java.math.BigDecimal,java.math.BigDecimal)
+}
+class PriceBreakdown {
+  -java.math.BigDecimal subtotal
+  -java.math.BigDecimal cargoServicio
+  -java.math.BigDecimal cuotaEmision
+  -java.math.BigDecimal total
+  -double descuentoAplicado
+  +java.math.BigDecimal getSubtotal()
+  +java.math.BigDecimal getCargoServicio()
+  +java.math.BigDecimal getCuotaEmision()
+  +java.math.BigDecimal getTotal()
+  +double getDescuentoAplicado()
+}
+class TicketFactory {
+  <<static>>
+  +TiqueteBasico crearBasico(String,boolean)
+  +TiqueteNumerado crearNumerado(String,boolean,String)
+  +TiqueteAgrupacion crearAgrupacion(String,boolean,java.math.BigDecimal,int)
+  +TiqueteMultiple crearMultiple(String,boolean,java.math.BigDecimal,int)
+  +PaqueteDeluxe crearPaqueteDeluxe(String,boolean,java.math.BigDecimal,int,String,boolean)
+}
+DefaultPricingPolicy ..|> PricingPolicy
+
+%% ===================== infrastructure.csv =====================
+class CSVUtil {
+  <<utility>>
+  +java.util.List~String~ readAll(java.nio.file.Path)
+  +void writeAllAtomic(java.nio.file.Path,java.util.List~String~)
+}
+class CsvFormat {
+  <<utility>>
+  +String escape(String)
+  +String join(String...)
+  +java.util.List~String~ split(String)
+}
+class CsvPaths {
+  <<utility>>
+  +java.nio.file.Path resolve(String)
+}
+
+class CsvMapper~T~ {
+  <<interface>>
+  +String toLine(T)
+  +T fromLine(String)
+}
+class AsientoCsvMapper {
+  +String toLine(Asiento)
+  +Asiento fromLine(String)
+}
+class EventoCsvMapper {
+  +String toLine(Evento)
+  +Evento fromLine(String)
+}
+class LocalidadCsvMapper {
+  +String toLine(Localidad)
+  +Localidad fromLine(String)
+}
+class OfertaCsvMapper {
+  +String toLine(Oferta)
+  +Oferta fromLine(String)
+}
+class TiqueteCsvMapper {
+  +String toLine(Tiquete)
+  +Tiquete fromLine(String)
+}
+class TiqueteAgregadoCsvMapper {
+  +String toLine(String,String,String)
+}
+class UsuarioCsvMapper {
+  +String toLine(Usuario)
+  +Usuario fromLine(String)
+}
+class VenueCsvMapper {
+  +String toLine(Venue)
+  +Venue fromLine(String)
+}
+AsientoCsvMapper ..|> CsvMapper
+EventoCsvMapper ..|> CsvMapper
+LocalidadCsvMapper ..|> CsvMapper
+OfertaCsvMapper ..|> CsvMapper
+TiqueteCsvMapper ..|> CsvMapper
+UsuarioCsvMapper ..|> CsvMapper
+VenueCsvMapper ..|> CsvMapper
+
+class AbstractCsvRepository~T~ {
+  -java.nio.file.Path path
+  -CsvMapper~T~ mapper
+  -String header
+  -java.util.function.Function~T,String~ idExtractor
+  +java.util.List~T~ findAll()
+  +java.util.Optional~T~ findById(String)
+  +T save(T)
+  +void update(T)
+  -java.util.List~T~ readAll()
+  -void writeAll(java.util.List~T~)
+}
+
+class CsvAsientoRepository {
+  +java.util.List~Asiento~ findByLocalidad(String)
+  +java.util.Optional~Asiento~ findByLocalidadAndNumero(String,String)
+}
+class CsvEventoRepository {
+  +java.util.List~Evento~ findByVenue(String)
+  +java.util.List~Evento~ findByOrganizador(String)
+  +java.util.Optional~Evento~ findByVenueAndNombre(String,String)
+}
+class CsvLocalidadRepository {
+  +java.util.List~Localidad~ findByEvento(String)
+  +java.util.Optional~Localidad~ findByEventoAndNombre(String,String)
+}
+class CsvOfertaRepository {
+  +java.util.List~Oferta~ findByLocalidad(String)
+}
+class CsvTiqueteRepository {
+  +java.util.List~Tiquete~ findByLocalidad(String)
+  +java.util.List~Tiquete~ findByComprador(String)
+}
+class CsvUsuarioRepository {
+  +java.util.Optional~Usuario~ findByLogin(String)
+}
+class CsvTiqueteAgregadoRepository {
+  +void addComponente(String,String,String)
+  +java.util.List~String~ findComponentes(String)
+}
+
+CsvAsientoRepository --|> AbstractCsvRepository
+CsvEventoRepository --|> AbstractCsvRepository
+CsvLocalidadRepository --|> AbstractCsvRepository
+CsvOfertaRepository --|> AbstractCsvRepository
+CsvTiqueteRepository --|> AbstractCsvRepository
+CsvUsuarioRepository --|> AbstractCsvRepository
+
+CsvAsientoRepository ..|> AsientoRepository
+CsvEventoRepository ..|> EventoRepository
+CsvLocalidadRepository ..|> LocalidadRepository
+CsvOfertaRepository ..|> OfertaRepository
+CsvTiqueteRepository ..|> TiqueteRepository
+CsvUsuarioRepository ..|> UsuarioRepository
+CsvTiqueteAgregadoRepository ..|> TiqueteAgregadoRepository
+
+AbstractCsvRepository ..> CSVUtil
+AbstractCsvRepository ..> CsvMapper
+CsvAsientoRepository ..> CsvPaths
+CsvEventoRepository ..> CsvPaths
+CsvLocalidadRepository ..> CsvPaths
+CsvOfertaRepository ..> CsvPaths
+CsvTiqueteRepository ..> CsvPaths
+CsvUsuarioRepository ..> CsvPaths
+AsientoCsvMapper ..> CsvFormat
+EventoCsvMapper ..> CsvFormat
+LocalidadCsvMapper ..> CsvFormat
+OfertaCsvMapper ..> CsvFormat
+TiqueteCsvMapper ..> CsvFormat
+UsuarioCsvMapper ..> CsvFormat
+VenueCsvMapper ..> CsvFormat
+
+%% ===================== presentation & main =====================
+class AppCli {
+  +AppCli()
+  +void run()
+}
+class Main {
+  +static void main(String[])
+}
+
+%% ===================== Relaciones de uso entre servicios y repos =====================
+AuthService --> UsuarioRepository
+AdminService --> UsuarioRepository
+AdminService --> VenueRepository
+OrganizerService --> VenueRepository
+OrganizerService --> EventoRepository
+OrganizerService --> LocalidadRepository
+OrganizerService --> AsientoRepository
+OrganizerService --> OfertaRepository
+CatalogService --> VenueRepository
+CatalogService --> EventoRepository
+CatalogService --> LocalidadRepository
+OfferService --> OfertaRepository
+PurchaseService --> UsuarioRepository
+PurchaseService --> LocalidadRepository
+PurchaseService --> OfertaRepository
+PurchaseService --> AsientoRepository
+PurchaseService --> TiqueteRepository
+PurchaseService --> OfferEngine
+PurchaseService --> PricingPolicy
+TransferService --> TiqueteRepository
+DataSeeder --> UsuarioRepository
+DataSeeder --> VenueRepository
+DataSeeder --> EventoRepository
+DataSeeder --> LocalidadRepository
+DataSeeder --> AsientoRepository
+DataSeeder --> OfertaRepository
+TicketFactory ..> IdGenerator
+
+AppCli --> AppContext
+AppCli --> AuthService
+AppCli --> AdminService
+AppCli --> OrganizerService
+AppCli --> CatalogService
+AppCli --> TransferService
+AppCli --> PurchaseService
+
+

@@ -1,0 +1,5 @@
+id,localidadId,numeroAsiento,disponible
+94e756cc-893e-485d-a992-16fe3b8fb5bd,2e474c74-782f-4448-a8a3-ec20e7ebd7e3,A1,true
+71e93ca4-9476-4fa0-ae4b-8b4ffc0cf7e1,2e474c74-782f-4448-a8a3-ec20e7ebd7e3,A2,true
+9c14c911-bd57-4f58-a623-7fb155a1a648,2e474c74-782f-4448-a8a3-ec20e7ebd7e3,B1,true
+ef23849e-24f4-482e-97ec-e96a59726fd5,2e474c74-782f-4448-a8a3-ec20e7ebd7e3,B2,true

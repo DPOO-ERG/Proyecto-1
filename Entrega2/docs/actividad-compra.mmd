@@ -1,0 +1,35 @@
+%% Actividad de compra
+flowchart TD
+start([Inicio])
+selLocalidad[Seleccionar localidad]
+esNum{¿Es numerada?}
+selAsiento[Seleccionar asiento]
+cantAgrupacion[Ingresar cantidad]
+tipoCompra{Tipo de compra}
+calcOfertas[Consultar ofertas y mejor descuento]
+calcPrecio[Calcular precio - PricingPolicy]
+
+saldo{¿Saldo suficiente?}
+debitar[Debitar saldo]
+crearBasico[Crear TiqueteBasico]
+crearNumerado[Crear TiqueteNumerado]
+crearAgrupacion[Crear TiqueteAgrupacion]
+crearDeluxe[Crear PaqueteDeluxe]
+marcarVendido[Marcar vendido]
+persistir[Guardar tiquete]
+fin([Fin])
+
+start --> selLocalidad --> esNum
+esNum -- Sí --> selAsiento --> tipoCompra
+esNum -- No --> tipoCompra
+
+tipoCompra -- Básico --> crearBasico --> calcOfertas
+tipoCompra -- Numerado --> crearNumerado --> calcOfertas
+tipoCompra -- Agrupación --> cantAgrupacion --> crearAgrupacion --> calcOfertas
+tipoCompra -- Paquete Deluxe --> cantAgrupacion --> crearDeluxe --> calcOfertas
+
+calcOfertas --> calcPrecio --> saldo
+saldo -- No --> fin
+saldo -- Sí --> debitar --> marcarVendido --> persistir --> fin
+
+

@@ -1,0 +1,3 @@
+id,eventoId,nombre,precioBase,esNumerada
+94bbe229-b2b9-42f3-adda-4be59ba52cdc,d4450365-490a-4092-9e2f-e36f15e1635c,General,50.00,false
+2e474c74-782f-4448-a8a3-ec20e7ebd7e3,d4450365-490a-4092-9e2f-e36f15e1635c,Platea,80.00,true

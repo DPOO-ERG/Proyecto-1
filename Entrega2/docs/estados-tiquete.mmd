@@ -1,0 +1,17 @@
+%% Estados (state) de Tiquete
+stateDiagram-v2
+direction LR
+
+[*] --> Creado
+
+state Creado {
+  [*] --> Disponible
+}
+
+Disponible --> Vendido: marcarVendido(compradorId, precios)
+Vendido --> Transferido: transferirA(nuevoCompradorId) [transferible]
+
+note right of Vendido: compradorId != null
+note right of Transferido: Requiere isTransferible()==true y isVendido()==true
+
+

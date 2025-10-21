@@ -1,0 +1,26 @@
+%% Secuencia: Organizador crea evento
+sequenceDiagram
+actor Organizador
+participant AppCli
+participant OrganizerService
+participant VenueRepository
+participant EventoRepository
+
+Organizador->>AppCli: crearEvento(venueId, nombre, fecha, tipo)
+AppCli->>OrganizerService: crearEvento(organizador, venueId, nombre, fecha, tipo)
+OrganizerService->>OrganizerService: checkOrganizador(organizador)
+OrganizerService->>VenueRepository: findById(venueId)
+VenueRepository-->>OrganizerService: Optional<Venue>
+alt venue no existe
+  OrganizerService-->>AppCli: BusinessException("Venue no existe")
+else venue existe
+  alt venue no aprobado
+    OrganizerService-->>AppCli: BusinessException("Venue no aprobado")
+  else aprobado
+    OrganizerService->>EventoRepository: save(new Evento(...))
+    EventoRepository-->>OrganizerService: Evento
+    OrganizerService-->>AppCli: Evento
+  end
+end
+
+

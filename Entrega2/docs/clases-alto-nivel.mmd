@@ -1,0 +1,110 @@
+%% Diagrama de clases (alto nivel) - Proyecto1
+%% Solo clases y relaciones. Agrupado por paquetes
+classDiagram
+direction LR
+
+namespace application_service {
+  class AppContext
+  class AuthService
+  class AdminService
+  class OrganizerService
+  class CatalogService
+  class OfferService
+  class PurchaseService
+  class TransferService
+  class DataSeeder
+}
+
+namespace domain_model {
+  class Asiento
+  class Localidad
+  class Evento
+  class Oferta
+  class Venue
+  class Usuario
+  class ClienteComprador
+  class Administrador
+  class Organizador
+  class Role
+  class Tiquete
+  %% Subtipos de Tiquete omitidos para simplicidad
+}
+
+namespace domain_repository {
+  class AsientoRepository
+  class EventoRepository
+  class LocalidadRepository
+  class VenueRepository
+  class OfertaRepository
+  class TiqueteRepository
+  class TiqueteAgregadoRepository
+  class UsuarioRepository
+}
+
+namespace domain_service {
+  class IdGenerator
+  class OfferEngine
+  class PricingPolicy
+  class DefaultPricingPolicy
+  class PriceBreakdown
+  class TicketFactory
+}
+
+
+namespace presentation_cli {
+  class AppCli
+}
+
+class Main
+
+%% Relaciones clave (sin atributos/métodos)
+domain_model.Usuario <|-- domain_model.ClienteComprador
+domain_model.Usuario <|-- domain_model.Administrador
+domain_model.ClienteComprador <|-- domain_model.Organizador
+
+%% Subtipos (no dibujados): Basico, Numerado, Agrupacion, Multiple, Deluxe
+note for domain_model.Tiquete "Subtipos: Basico, Numerado, Agrupacion, Multiple, Deluxe"
+
+domain_model.Asiento --> domain_model.Localidad
+domain_model.Localidad --> domain_model.Evento
+domain_model.Evento --> domain_model.Venue
+domain_model.Tiquete --> domain_model.Localidad
+domain_model.Tiquete ..> domain_model.Usuario
+
+application_service.AuthService --> domain_repository.UsuarioRepository
+application_service.AdminService --> domain_repository.UsuarioRepository
+application_service.AdminService --> domain_repository.VenueRepository
+application_service.OrganizerService --> domain_repository.VenueRepository
+application_service.OrganizerService --> domain_repository.EventoRepository
+application_service.OrganizerService --> domain_repository.LocalidadRepository
+application_service.OrganizerService --> domain_repository.AsientoRepository
+application_service.OrganizerService --> domain_repository.OfertaRepository
+application_service.CatalogService --> domain_repository.VenueRepository
+application_service.CatalogService --> domain_repository.EventoRepository
+application_service.CatalogService --> domain_repository.LocalidadRepository
+application_service.OfferService --> domain_repository.OfertaRepository
+application_service.PurchaseService --> domain_repository.UsuarioRepository
+application_service.PurchaseService --> domain_repository.LocalidadRepository
+application_service.PurchaseService --> domain_repository.OfertaRepository
+application_service.PurchaseService --> domain_repository.AsientoRepository
+application_service.PurchaseService --> domain_repository.TiqueteRepository
+application_service.PurchaseService --> domain_service.OfferEngine
+application_service.PurchaseService --> domain_service.PricingPolicy
+application_service.TransferService --> domain_repository.TiqueteRepository
+application_service.DataSeeder --> domain_repository.UsuarioRepository
+application_service.DataSeeder --> domain_repository.VenueRepository
+application_service.DataSeeder --> domain_repository.EventoRepository
+application_service.DataSeeder --> domain_repository.LocalidadRepository
+application_service.DataSeeder --> domain_repository.AsientoRepository
+application_service.DataSeeder --> domain_repository.OfertaRepository
+domain_service.TicketFactory ..> domain_service.IdGenerator
+
+presentation_cli.AppCli --> application_service.AppContext
+presentation_cli.AppCli --> application_service.AuthService
+presentation_cli.AppCli --> application_service.AdminService
+presentation_cli.AppCli --> application_service.OrganizerService
+presentation_cli.AppCli --> application_service.CatalogService
+presentation_cli.AppCli --> application_service.TransferService
+presentation_cli.AppCli --> application_service.PurchaseService
+
+

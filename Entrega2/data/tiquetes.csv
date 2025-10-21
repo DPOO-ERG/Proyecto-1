@@ -1,0 +1,2 @@
+id,tipo,localidadId,compradorId,precioFinal,cargoServicio,cuotaEmision,transferible,vendido,numeroAsiento,precioAgrupacion,restriccionTopeX
+cfadfe97-7891-4c67-92b9-3c2a205fcf34,BASICO,94bbe229-b2b9-42f3-adda-4be59ba52cdc,4c66987c-f618-4fc6-a813-fedc009559bc,45.00,4.00,1.00,false,true,,,

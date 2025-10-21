@@ -1,0 +1,45 @@
+%% Secuencia: Autenticación
+sequenceDiagram
+actor Usuario
+participant AuthService
+participant UsuarioRepository
+
+Usuario->>AuthService: login(login, password)
+AuthService->>UsuarioRepository: findByLogin(login)
+UsuarioRepository-->>AuthService: Optional<Usuario>
+alt usuario no existe o password incorrecto
+  AuthService-->>Usuario: BusinessException("Credenciales inválidas")
+else autenticación exitosa
+  AuthService-->>Usuario: Usuario
+end
+
+Note over AuthService,UsuarioRepository: Al inicializar AuthService se ejecuta seedAdminIfMissing()
+AuthService->>UsuarioRepository: findAll()
+UsuarioRepository-->>AuthService: List<Usuario>
+opt si no hay ADMIN
+  AuthService->>UsuarioRepository: save(new Administrador(...))
+end
+
+%% Registro Cliente
+Usuario->>AuthService: registrarCliente(login, password)
+AuthService->>UsuarioRepository: findByLogin(login)
+UsuarioRepository-->>AuthService: Optional<Usuario>
+alt login ya existe
+  AuthService-->>Usuario: BusinessException("Login ya existente")
+else libre
+  AuthService->>UsuarioRepository: save(new ClienteComprador(...))
+  AuthService-->>Usuario: ClienteComprador
+end
+
+%% Registro Organizador
+Usuario->>AuthService: registrarOrganizador(login, password)
+AuthService->>UsuarioRepository: findByLogin(login)
+UsuarioRepository-->>AuthService: Optional<Usuario>
+alt login ya existe
+  AuthService-->>Usuario: BusinessException("Login ya existente")
+else libre
+  AuthService->>UsuarioRepository: save(new Organizador(...))
+  AuthService-->>Usuario: Organizador
+end
+
+
