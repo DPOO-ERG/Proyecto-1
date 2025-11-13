@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class CsvEventoRepository extends AbstractCsvRepository<Evento> implements EventoRepository {
     public CsvEventoRepository() {
         super(resolvePath(), new EventoCsvMapper(),
-                "id,nombre,fechaISO,tipoEvento,venueId,organizadorId",
+                "id,nombre,fechaISO,tipoEvento,venueId,organizadorId,estado",
                 Evento::getId);
     }
 

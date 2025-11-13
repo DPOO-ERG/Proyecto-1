@@ -10,14 +10,21 @@ public class EventoCsvMapper implements CsvMapper<Evento> {
     @Override
     public String toLine(Evento e) {
         return CsvFormat.join(
-                e.getId(), e.getNombre(), e.getFecha().toString(), e.getTipoEvento(), e.getVenueId(), e.getOrganizadorId()
+                e.getId(), e.getNombre(), e.getFecha().toString(), e.getTipoEvento(), e.getVenueId(), e.getOrganizadorId(), e.getEstado().name()
         );
     }
 
     @Override
     public Evento fromLine(String line) {
         List<String> c = CsvFormat.split(line);
-        return new Evento(c.get(0), c.get(1), LocalDate.parse(c.get(2)), c.get(3), c.get(4), c.get(5));
+        if (c.size() >= 7) {
+            return new Evento(c.get(0), c.get(1), LocalDate.parse(c.get(2)), c.get(3), c.get(4), c.get(5),
+                    co.edu.uniandes.proyecto1.domain.model.evento.EstadoEvento.valueOf(c.get(6)));
+        } else {
+            // Compatibilidad hacia atrás: estado por defecto ACTIVO
+            return new Evento(c.get(0), c.get(1), LocalDate.parse(c.get(2)), c.get(3), c.get(4), c.get(5),
+                    co.edu.uniandes.proyecto1.domain.model.evento.EstadoEvento.ACTIVO);
+        }
     }
 }
 

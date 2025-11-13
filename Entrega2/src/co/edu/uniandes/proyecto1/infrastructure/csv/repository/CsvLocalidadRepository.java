@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class CsvLocalidadRepository extends AbstractCsvRepository<Localidad> implements LocalidadRepository {
     public CsvLocalidadRepository() {
         super(resolvePath(), new LocalidadCsvMapper(),
-                "id,eventoId,nombre,precioBase,esNumerada",
+                "id,eventoId,nombre,precioBase,esNumerada,capacidad",
                 Localidad::getId);
     }
 

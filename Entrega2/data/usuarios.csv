@@ -1,5 +1,4 @@
 id,role,login,password,saldoVirtual,porcentajeCargoServicio,cobroFijoEmision
 46a41b93-08c1-40d7-9bb1-945ec283a584,ADMIN,admin,admin,,0.10,1.00
-215b8cc8-ff6f-4d1d-a285-6fd68dd6a529,CLIENTE,cli,cli,500.00,,
-72c2216c-d468-4ebe-9a84-a6ba33d45d0d,CLIENTE,org,org,0,,
-4c66987c-f618-4fc6-a813-fedc009559bc,CLIENTE,erik,erik,19955.00,,
+2da3a5b7-6dc0-468a-bb75-7cd8bf6774cc,CLIENTE,cli,cli,500.00,,
+dfd809f7-014e-47c5-9da8-dd6b4058d9a1,ORGANIZADOR,org,org,0,,

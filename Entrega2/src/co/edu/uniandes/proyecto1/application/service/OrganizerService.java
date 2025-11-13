@@ -47,15 +47,21 @@ public class OrganizerService {
         checkOrganizador(organizador);
         Venue v = venues.findById(venueId).orElseThrow(() -> new BusinessException("Venue no existe"));
         if (!v.isAprobado()) throw new BusinessException("Venue no aprobado");
-        Evento e = new Evento(IdGenerator.newId(), nombre, fecha, tipo, venueId, organizador.getId());
+        Evento e = new Evento(IdGenerator.newId(), nombre, fecha, tipo, venueId, organizador.getId(),
+                co.edu.uniandes.proyecto1.domain.model.evento.EstadoEvento.ACTIVO);
         return eventos.save(e);
     }
 
     public Localidad crearLocalidad(Usuario organizador, String eventoId, String nombre, BigDecimal precioBase, boolean esNumerada) {
+        // Compatibilidad: capacidad por defecto 0 si no se especifica
+        return crearLocalidad(organizador, eventoId, nombre, precioBase, esNumerada, 0);
+    }
+
+    public Localidad crearLocalidad(Usuario organizador, String eventoId, String nombre, BigDecimal precioBase, boolean esNumerada, int capacidad) {
         checkOrganizador(organizador);
         Evento e = eventos.findById(eventoId).orElseThrow(() -> new BusinessException("Evento no existe"));
         if (!e.getOrganizadorId().equals(organizador.getId())) throw new BusinessException("No es tu evento");
-        Localidad l = new Localidad(IdGenerator.newId(), eventoId, nombre, precioBase, esNumerada);
+        Localidad l = new Localidad(IdGenerator.newId(), eventoId, nombre, precioBase, esNumerada, capacidad);
         return localidades.save(l);
     }
 
@@ -74,6 +80,19 @@ public class OrganizerService {
         Localidad l = localidades.findById(localidadId).orElseThrow(() -> new BusinessException("Localidad no existe"));
         Oferta o = new Oferta(IdGenerator.newId(), localidadId, descuento, inicio, fin);
         return ofertas.save(o);
+    }
+
+    public void solicitarCancelacionEvento(Usuario organizador, String eventoId) {
+        checkOrganizador(organizador);
+        Evento e = eventos.findById(eventoId).orElseThrow(() -> new BusinessException("Evento no existe"));
+        if (!e.getOrganizadorId().equals(organizador.getId())) {
+            throw new BusinessException("No es tu evento");
+        }
+        if (e.getEstado() == co.edu.uniandes.proyecto1.domain.model.evento.EstadoEvento.CANCELADO) {
+            throw new BusinessException("El evento ya está cancelado");
+        }
+        e.setEstado(co.edu.uniandes.proyecto1.domain.model.evento.EstadoEvento.CANCELACION_SOLICITADA);
+        eventos.update(e);
     }
 }
 

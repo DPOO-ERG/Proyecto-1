@@ -7,6 +7,9 @@ import co.edu.uniandes.proyecto1.domain.model.user.Usuario;
 import co.edu.uniandes.proyecto1.domain.model.venue.Venue;
 import co.edu.uniandes.proyecto1.domain.repository.UsuarioRepository;
 import co.edu.uniandes.proyecto1.domain.repository.VenueRepository;
+import co.edu.uniandes.proyecto1.domain.repository.EventoRepository;
+import co.edu.uniandes.proyecto1.domain.model.evento.Evento;
+import co.edu.uniandes.proyecto1.domain.model.evento.EstadoEvento;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,10 +17,12 @@ import java.util.List;
 public class AdminService {
     private final UsuarioRepository usuarios;
     private final VenueRepository venues;
+    private final EventoRepository eventos;
 
-    public AdminService(UsuarioRepository usuarios, VenueRepository venues) {
+    public AdminService(UsuarioRepository usuarios, VenueRepository venues, EventoRepository eventos) {
         this.usuarios = usuarios;
         this.venues = venues;
+        this.eventos = eventos;
     }
 
     public List<Venue> listarPendientes() {
@@ -50,6 +55,20 @@ public class AdminService {
         if (u == null || u.getRole() != Role.ADMIN) {
             throw new BusinessException("Operación solo para ADMIN");
         }
+    }
+
+    public void aprobarCancelacion(String eventoId, Usuario admin) {
+        checkAdmin(admin);
+        Evento e = eventos.findById(eventoId).orElseThrow(() -> new BusinessException("Evento no encontrado"));
+        e.setEstado(EstadoEvento.CANCELADO);
+        eventos.update(e);
+    }
+
+    public void rechazarCancelacion(String eventoId, Usuario admin) {
+        checkAdmin(admin);
+        Evento e = eventos.findById(eventoId).orElseThrow(() -> new BusinessException("Evento no encontrado"));
+        e.setEstado(EstadoEvento.ACTIVO);
+        eventos.update(e);
     }
 }
 

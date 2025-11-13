@@ -67,14 +67,14 @@ public class DataSeeder {
 
         // Evento de prueba
         Evento e = eventos.findByVenueAndNombre(v.getId(), "Concierto Demo")
-                .orElseGet(() -> eventos.save(new Evento(IdGenerator.newId(), "Concierto Demo", LocalDate.now().plusDays(14), "MUSICA", v.getId(), orgId)));
+                .orElseGet(() -> eventos.save(new Evento(IdGenerator.newId(), "Concierto Demo", LocalDate.now().plusDays(14), "MUSICA", v.getId(), orgId, co.edu.uniandes.proyecto1.domain.model.evento.EstadoEvento.ACTIVO)));
 
         // Localidades
         Localidad lGeneral = localidades.findByEventoAndNombre(e.getId(), "General")
-                .orElseGet(() -> localidades.save(new Localidad(IdGenerator.newId(), e.getId(), "General", new BigDecimal("50.00"), false)));
+                .orElseGet(() -> localidades.save(new Localidad(IdGenerator.newId(), e.getId(), "General", new BigDecimal("50.00"), false, 100)));
 
         Localidad lPlatea = localidades.findByEventoAndNombre(e.getId(), "Platea")
-                .orElseGet(() -> localidades.save(new Localidad(IdGenerator.newId(), e.getId(), "Platea", new BigDecimal("80.00"), true)));
+                .orElseGet(() -> localidades.save(new Localidad(IdGenerator.newId(), e.getId(), "Platea", new BigDecimal("80.00"), true, 0)));
 
         // Asientos para Platea (si faltan)
         Arrays.asList("A1", "A2", "B1", "B2").forEach(num -> {
